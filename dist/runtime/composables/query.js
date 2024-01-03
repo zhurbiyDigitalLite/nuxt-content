@@ -9,7 +9,7 @@ import { useRuntimeConfig } from "#imports";
 export const createQueryFetch = () => async (query) => {
   const { content } = useRuntimeConfig().public;
   const params = query.params();
-  const apiPath = content.experimental.stripQueryParameters ? withContentBase(`/query/${process.dev ? "_" : `${hash(params)}.${content.integrity}`}/${encodeQueryParams(params)}.json`) : withContentBase(process.dev ? "/query" : `/query/${hash(params)}.${content.integrity}.json`);
+  const apiPath = content.experimental.stripQueryParameters ? withContentBase(`/query/_/${encodeQueryParams(params)}.json`) : withContentBase("/query");
   if (!process.dev && process.server) {
     addPrerenderPath(apiPath);
   }
