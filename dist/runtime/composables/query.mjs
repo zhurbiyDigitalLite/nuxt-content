@@ -9,6 +9,7 @@ import { useRuntimeConfig } from "#imports";
 export const createQueryFetch = () => async (query) => {
   const { content } = useRuntimeConfig().public;
   const params = query.params();
+  console.log('her 1')
   const apiPath = content.experimental.stripQueryParameters ? withContentBase(`/query/_/${encodeQueryParams(params)}.json`) : withContentBase("/query");
   if (!process.dev && process.server) {
     addPrerenderPath(apiPath);
@@ -31,6 +32,7 @@ export const createQueryFetch = () => async (query) => {
   return data;
 };
 export function queryContent(query, ...pathParts) {
+  console.log('her 01');
   const { content } = useRuntimeConfig().public;
   const queryBuilder = content.experimental.advanceQuery ? createQuery(createQueryFetch(), { initialParams: typeof query !== "string" ? query : {}, legacy: false }) : createQuery(createQueryFetch(), { initialParams: typeof query !== "string" ? query : {}, legacy: true });
   let path;
