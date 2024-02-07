@@ -14,6 +14,7 @@ export const sourceStorage = prefixStorage(useStorage(), "content:source");
 export const cacheStorage = prefixStorage(useStorage(), "cache:content");
 export const cacheParsedStorage = prefixStorage(useStorage(), "cache:content:parsed");
 const isProduction = process.env.NODE_ENV === "production";
+const isPrerendering = import.meta.prerender;
 const contentConfig = useRuntimeConfig().content;
 const isIgnored = makeIgnored(contentConfig.ignores);
 const invalidKeyCharacters = `'"?#/`.split("");
@@ -61,16 +62,39 @@ export function* chunksFromArray(arr, n) {
     yield arr.slice(i, i + n);
   }
 }
-export const getContentsList = async (event, prefix) => {
-  const keys = await getContentsIds(event, prefix);
-  const keyChunks = [...chunksFromArray(keys, 10)];
-  const contents = [];
-  for (const chunk of keyChunks) {
-    const result = await Promise.all(chunk.map((key) => getContent(event, key)));
-    contents.push(...result);
-  }
-  return contents;
-};
+export const getContentsList = /* @__PURE__ */ (() => {
+  let cachedContents = [];
+  let pendingContentsListPromise = null;
+  const _getContentsList = async (event, prefix) => {
+    const keys = await getContentsIds(event, prefix);
+    const keyChunks = [...chunksFromArray(keys, 10)];
+    const contents = [];
+    for (const chunk of keyChunks) {
+      const result = await Promise.all(chunk.map((key) => getContent(event, key)));
+      contents.push(...result);
+    }
+    return contents;
+  };
+  return (event, prefix) => {
+    if (event.context.__contentList) {
+      return event.context.__contentList;
+    }
+    if (isPrerendering && cachedContents.length) {
+      return cachedContents;
+    }
+    if (!pendingContentsListPromise) {
+      pendingContentsListPromise = _getContentsList(event, prefix);
+      pendingContentsListPromise.then((result) => {
+        if (isPrerendering) {
+          cachedContents = result;
+        }
+        event.context.__contentList = result;
+        pendingContentsListPromise = null;
+      });
+    }
+    return pendingContentsListPromise;
+  };
+})();
 const pendingPromises = {};
 export const getContent = async (event, id) => {
   const contentId = id;

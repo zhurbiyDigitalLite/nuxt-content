@@ -1,5 +1,5 @@
 
-import type { ModuleOptions, ModuleHooks } from './module'
+import type { ModuleOptions, ModuleHooks } from './module.js'
 
 
 declare module '@nuxt/schema' {
@@ -15,4 +15,4 @@ declare module 'nuxt/schema' {
 }
 
 
-export type { ModuleHooks, ModuleOptions, MountOptions, default } from './module'
+export type { ModuleHooks, ModuleOptions, MountOptions, default } from './module.js'

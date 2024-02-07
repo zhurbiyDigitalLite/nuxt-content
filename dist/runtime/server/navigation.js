@@ -66,6 +66,9 @@ export function createNav(contents, configs) {
 }
 const collator = new Intl.Collator(void 0, { numeric: true, sensitivity: "base" });
 function sortAndClear(nav) {
+  nav.forEach((item) => {
+    item._file = item._file.split(".").slice(0, -1).join(".");
+  });
   const sorted = nav.sort((a, b) => collator.compare(a._file, b._file));
   for (const item of sorted) {
     if (item.children?.length) {

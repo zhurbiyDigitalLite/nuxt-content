@@ -1,8 +1,8 @@
-import { createError } from "h3";
+import { createError, defineEventHandler } from "h3";
 import { serverQueryContent } from "../storage.js";
 import { getContentQuery } from "../../utils/query.js";
-import { useRuntimeConfig, cachedEventHandler } from "#imports";
-export default cachedEventHandler(async (event) => {
+import { useRuntimeConfig } from "#imports";
+export default defineEventHandler(async (event) => {
   const query = getContentQuery(event);
   const { advanceQuery } = useRuntimeConfig().public.content.experimental;
   if (query.first) {
@@ -29,7 +29,4 @@ export default cachedEventHandler(async (event) => {
     return serverQueryContent(event, query).count();
   }
   return serverQueryContent(event, query).find();
-}, {
-  maxAge: 31536e3,
-  shouldBypassCache: () => !!import.meta.dev
 });

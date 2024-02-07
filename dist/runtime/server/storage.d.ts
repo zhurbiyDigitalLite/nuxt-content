@@ -21,7 +21,7 @@ export declare const cacheStorage: Storage;
 export declare const cacheParsedStorage: Storage;
 export declare const getContentsIds: (event: H3Event, prefix?: string) => Promise<string[]>;
 export declare function chunksFromArray<T>(arr: T[], n: number): Generator<T[], void>;
-export declare const getContentsList: (event: H3Event, prefix?: string) => Promise<ParsedContent[]>;
+export declare const getContentsList: (event: H3Event, prefix?: string) => any;
 export declare const getContent: (event: H3Event, id: string) => Promise<ParsedContent>;
 /**
  * Parse content file using registered plugins

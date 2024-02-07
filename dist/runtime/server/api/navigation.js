@@ -1,9 +1,9 @@
+import { defineEventHandler } from "h3";
 import { cacheStorage, serverQueryContent } from "../storage.js";
 import { createNav } from "../navigation.js";
 import { getContentQuery } from "../../utils/query.js";
 import { isPreview } from "../preview.js";
-import { cachedEventHandler } from "#imports";
-export default cachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const query = getContentQuery(event);
   if (!isPreview(event) && Object.keys(query).length === 0) {
     const cache = await cacheStorage.getItem("content-navigation.json");
@@ -38,7 +38,4 @@ export default cachedEventHandler(async (event) => {
     return configs2;
   }, {});
   return createNav(contents?.result || contents, configs);
-}, {
-  maxAge: 31536e3,
-  shouldBypassCache: () => !!import.meta.dev
 });

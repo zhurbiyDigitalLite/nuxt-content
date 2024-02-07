@@ -3,7 +3,7 @@ import { useRuntimeConfig, useFetch, ref, computed, toValue } from "#imports";
 export const defineMiniSearchOptions = (options) => {
   return ref(options);
 };
-export const searchContent = async (search, options) => {
+export const searchContent = async (search, options = {}) => {
   const runtimeConfig = useRuntimeConfig();
   const { content } = runtimeConfig.public;
   const { integrity, api: { baseURL: baseAPI }, search: searchOptions } = content;

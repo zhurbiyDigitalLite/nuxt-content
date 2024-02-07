@@ -14,7 +14,7 @@ import { WebSocketServer } from 'ws';
 import { consola } from 'consola';
 
 const name = "@nuxt/content";
-const version = "2.10.0";
+const version = "2.12.0";
 
 function makeIgnored(ignores) {
   const rxAll = ["/\\.", "/-", ...ignores.filter((p) => p)].map((p) => new RegExp(p));
@@ -228,7 +228,7 @@ const module = defineNuxtModule({
         enforce: "pre",
         transform(code) {
           if (code.includes("ContentSlot")) {
-            code = code.replace(/<ContentSlot (.*)(:use=['"](\$slots.)?([a-zA-Z0-9_-]*)['"]|use=['"]([a-zA-Z0-9_-]*)['"])/g, '<MDCSlot $1 name="$4"');
+            code = code.replace(/<ContentSlot(\s)+([^/>]*)(:use=['"](\$slots.)?([a-zA-Z0-9_-]*)['"])/g, '<MDCSlot$1$2name="$5"');
             code = code.replace(/<\/ContentSlot>/g, "</MDCSlot>");
             code = code.replace(/<ContentSlot/g, "<MDCSlot");
             code = code.replace(/(['"])ContentSlot['"]/g, "$1MDCSlot$1");
@@ -389,7 +389,7 @@ const module = defineNuxtModule({
     addTemplate({
       filename: "content-components.mjs",
       getContents({ options: options2 }) {
-        const components = options2.getComponents(options2.mode).filter((c) => !c.island).flatMap((c) => {
+        const components = options2.getComponents().filter((c) => !c.island).flatMap((c) => {
           const exp = c.export === "default" ? "c.default || c" : `c['${c.export}']`;
           const isClient = c.mode === "client";
           const definitions = [];
@@ -588,7 +588,8 @@ const module = defineNuxtModule({
         tailwindConfig.content.files = tailwindConfig.content.files ?? [];
         tailwindConfig.content.files.push(contentPath);
       }
-      let cssPath = nuxt.options.tailwindcss?.cssPath ? await resolvePath(nuxt.options.tailwindcss?.cssPath, { extensions: [".css", ".sass", ".scss", ".less", ".styl"] }) : join(nuxt.options.dir.assets, "css/tailwind.css");
+      const [tailwindCssPath] = Array.isArray(nuxt.options.tailwindcss?.cssPath) ? nuxt.options.tailwindcss?.cssPath : [nuxt.options.tailwindcss?.cssPath];
+      let cssPath = tailwindCssPath ? await resolvePath(tailwindCssPath, { extensions: [".css", ".sass", ".scss", ".less", ".styl"] }) : join(nuxt.options.dir.assets, "css/tailwind.css");
       if (!fs.existsSync(cssPath)) {
         cssPath = await resolvePath("tailwindcss/tailwind.css");
       }

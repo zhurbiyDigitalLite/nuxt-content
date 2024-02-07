@@ -1,7 +1,7 @@
 import * as _nuxt_schema from '@nuxt/schema';
 import { ListenOptions } from 'listhen';
 import { Options } from 'minisearch';
-import { Theme, Lang } from 'shiki-es';
+import { BuiltinTheme, BuiltinLanguage, LanguageRegistration, ThemeRegistrationAny } from 'shiki';
 
 interface ParsedContentInternalMeta {
     /**
@@ -438,14 +438,30 @@ interface ModuleOptions {
         /**
          * Default theme that will be used for highlighting code blocks.
          */
-        theme?: Theme | {
-            default: Theme;
-            [theme: string]: Theme;
+        theme?: BuiltinTheme | {
+            default: BuiltinTheme;
+            [theme: string]: BuiltinTheme;
         };
         /**
          * Preloaded languages that will be available for highlighting code blocks.
+         *
+         * @deprecated Use `langs` instead
          */
-        preload?: Lang[];
+        preload?: (BuiltinLanguage | LanguageRegistration)[];
+        /**
+         * Languages to be bundled loaded by Shiki
+         *
+         * All languages used has to be included in this list at build time, to create granular bundles.
+         *
+         * Unlike the `preload` option, when this option is provided, it will override the default languages.
+         *
+         * @default ['js','ts','vue','css','html','vue','shell']
+         */
+        langs?: (BuiltinLanguage | LanguageRegistration)[];
+        /**
+         * Additional themes to be bundled loaded by Shiki
+         */
+        themes?: (BuiltinTheme | ThemeRegistrationAny)[];
     };
     /**
      * Options for yaml parser.
@@ -549,7 +565,7 @@ interface ModuleOptions {
              *
              * @default true
              */
-            indexed: boolean;
+            indexed?: boolean;
             /**
              * MiniSearch Options. When using `indexed` option,
              * this options will be used to configure MiniSearch
@@ -572,7 +588,7 @@ interface ModuleOptions {
              *
              * @see https://lucaong.github.io/minisearch/modules/_minisearch_.html#options
              */
-            options: Options;
+            options?: Options;
         };
     };
 }

@@ -10,8 +10,13 @@ export default defineTransformer({
     const config = { ...options };
     config.rehypePlugins = await importPlugins(config.rehypePlugins);
     config.remarkPlugins = await importPlugins(config.remarkPlugins);
+    const highlightOptions = options.highlight ? {
+      ...options.highlight,
+      // Pass only when it's an function. String values are handled by `@nuxtjs/mdc`
+      highlighter: typeof options.highlight?.highlighter === "function" ? options.highlight.highlighter : void 0
+    } : void 0;
     const parsed = await parseMarkdown(content, {
-      highlight: options.highlight,
+      highlight: highlightOptions,
       remark: {
         plugins: config.remarkPlugins
       },
